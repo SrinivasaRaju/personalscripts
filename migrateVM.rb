@@ -169,7 +169,7 @@ def migrateVmNow (zone, vmid, stid)
     puts "\n\n"
 end
 
-def getStorageStatus (zone, stid)
+def getStorageStatus(zone, stid)
 
     cmd = "cloudstack -p #{zone} listStoragePools id=#{stid}"
     stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd}")
@@ -190,7 +190,7 @@ if ARGV.length == 3
     vmid = ARGV[1]
     stid = ARGV[2]
 
-    perUsed = getStorageStatus (zone, stid)
+    perUsed = getStorageStatus(zone, stid)
 
     if perUsed >= 95
         puts "Already #{stid} is filled up #{perUsed}, please use any other storage"
