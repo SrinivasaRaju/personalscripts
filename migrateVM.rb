@@ -219,8 +219,7 @@ if ARGV.length == 3
         end
 
         file1 = File.open(filename,'a+')
-        cmd = `ls -lh #{filename}`
-        if cmd.split(" ")[0] != "-rwxrwxrwx"
+        if not File.world_writable?(filename)
             file1.chmod(0777)
         end
         file1.write "#{vmname},#{vmid},#{curxen},#{data}\n"
@@ -235,8 +234,7 @@ if ARGV.length == 3
         str = "#{zone}|#{vmname}|#{vmid}|#{data}|#{jobid}"
         jobfile = "/tmp/jobstatus_#{cdate}"
         file1 = File.open(jobfile,'a+')
-        cmd = `ls -lh #{jobfile}`
-        if cmd.split(" ")[0] != "-rwxrwxrwx"
+        if not File.world_writable?(jobfile)
             file1.chmod(0777)
         end
         file1.write "#{str}\n"
@@ -250,10 +248,10 @@ if ARGV.length == 3
         end
 
         file1 = File.open(filename,'a+')
-        cmd = `ls -lh #{filename}`
-        if cmd.split(" ")[0] != "-rwxrwxrwx"
+        if not File.world_writable?(jobfile)
             file1.chmod(0777)
         end
+
         file1.write "#{vmname},#{vmid},#{curxen},#{data}\n"
         file1.close
 
@@ -265,8 +263,7 @@ if ARGV.length == 3
         str = "#{zone}|#{vmname}|#{vmid}|#{data}|#{jobid}"
         jobfile = "/tmp/jobstatus_#{cdate}"
         file1 = File.open(jobfile,'a+')
-        cmd = `ls -lh #{jobfile}`
-        if cmd.split(" ")[0] != "-rwxrwxrwx"
+        if not File.world_writable?(jobfile)
             file1.chmod(0777)
         end
         file1.write "#{str}\n"
