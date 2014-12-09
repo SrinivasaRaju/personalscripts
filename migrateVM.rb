@@ -184,7 +184,6 @@ def getStorageStatus(zone, stid)
     return perUsed
 end    
 
-
 if ARGV.length == 3
     zone = ARGV[0]
     vmid = ARGV[1]
@@ -220,7 +219,10 @@ if ARGV.length == 3
         end
 
         file1 = File.open(filename,'a+')
-        file1.chmod(0777)
+        cmd = `ls -lh #{filename}`
+        if cmd.split(" ")[0] != "-rwxrwxrwx"
+            file1.chmod(0777)
+        end
         file1.write "#{vmname},#{vmid},#{curxen},#{data}\n"
         file1.close
 
@@ -233,32 +235,40 @@ if ARGV.length == 3
         str = "#{zone}|#{vmname}|#{vmid}|#{data}|#{jobid}"
         jobfile = "/tmp/jobstatus_#{cdate}"
         file1 = File.open(jobfile,'a+')
-        file1.chmod(0777)
+        cmd = `ls -lh #{jobfile}`
+        if cmd.split(" ")[0] != "-rwxrwxrwx"
+            file1.chmod(0777)
+        end
         file1.write "#{str}\n"
         file1.close
     end
     elsif obj1['listvirtualmachinesresponse']['virtualmachine'][0]['state'] == "Stopped"
         data = Hash.new
-        file1 = File.open(filename,'a+')
         data = getDiskInfo(vmid, zone)
         if data.length > 0
             doDetachVolume(vmid, zone, data)
         end
 
         file1 = File.open(filename,'a+')
-        file1.chmod(0777)
+        cmd = `ls -lh #{filename}`
+        if cmd.split(" ")[0] != "-rwxrwxrwx"
+            file1.chmod(0777)
+        end
         file1.write "#{vmname},#{vmid},#{curxen},#{data}\n"
         file1.close
 
         migrateVmNow(zone, vmid, stid)
         startVMNow(zone, vmid)
-    jobid=""
+        jobid=""
         if data.length > 0
             jobid=doAttachVolume(vmid, zone, data)
-    str = "#{zone}|#{vmname}|#{vmid}|#{data}|#{jobid}"
-    jobfile = "/tmp/jobstatus_#{cdate}"
-    file1 = File.open(jobfile,'a+')
-        file1.chmod(0777)
+        str = "#{zone}|#{vmname}|#{vmid}|#{data}|#{jobid}"
+        jobfile = "/tmp/jobstatus_#{cdate}"
+        file1 = File.open(jobfile,'a+')
+        cmd = `ls -lh #{jobfile}`
+        if cmd.split(" ")[0] != "-rwxrwxrwx"
+            file1.chmod(0777)
+        end
         file1.write "#{str}\n"
         file1.close 
     end
