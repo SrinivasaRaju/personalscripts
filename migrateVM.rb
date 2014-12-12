@@ -13,7 +13,7 @@ cdate.chomp
 filename = "/tmp/migrationwork_#{cdate}"
 
 def getStatusVM (vmid, zone)
-    cmd = "cloudstack -p #{zone} listVirtualMachines id=#{vmid}"
+    cmd = "cloudstack -p #{zone} listVirtualMachines id=#{vmid} listall=true"
     stdin, stdout, stderr, wait_thr = Open3.popen3("#{cmd}")
     str = stdout.read
     if str.include? "Error 500"
@@ -53,7 +53,7 @@ end
 
 def getDiskInfo (vmid, zone)
     hash1 = Hash.new
-    cmd = "cloudstack -p #{zone} listVolumes virtualmachineid=#{vmid}"
+    cmd = "cloudstack -p #{zone} listVolumes virtualmachineid=#{vmid} listall=true"
     stdin, stdout, stderr, wait_thr = Open3.popen3("#{cmd}")
     str = stdout.read
     if str.include? "Error 500"
@@ -211,7 +211,7 @@ if ARGV.length == 3
             obj2 = getStatusVM(vmid, zone)
             status = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['state']
         end
-    print "\n\n"
+        print "\n\n"
         data = Hash.new
         data = getDiskInfo(vmid, zone)
         if data.length > 0
@@ -227,19 +227,19 @@ if ARGV.length == 3
 
         migrateVmNow(zone, vmid, stid)
         startVMNow(zone, vmid)
-    jobid=""
+        jobid=""
         if data.length > 0
             jobid=doAttachVolume(vmid, zone, data)
 
-        str = "#{zone}|#{vmname}|#{vmid}|#{data}|#{jobid}"
-        jobfile = "/tmp/jobstatus_#{cdate}"
-        file1 = File.open(jobfile,'a+')
-        if not File.world_writable?(jobfile)
-            file1.chmod(0777)
+            str = "#{zone}|#{vmname}|#{vmid}|#{data}|#{jobid}"
+            jobfile = "/tmp/jobstatus_#{cdate}"
+            file1 = File.open(jobfile,'a+')
+            if not File.world_writable?(jobfile)
+                file1.chmod(0777)
+            end
+            file1.write "#{str}\n"
+            file1.close
         end
-        file1.write "#{str}\n"
-        file1.close
-    end
     elsif obj1['listvirtualmachinesresponse']['virtualmachine'][0]['state'] == "Stopped"
         data = Hash.new
         data = getDiskInfo(vmid, zone)
@@ -248,7 +248,7 @@ if ARGV.length == 3
         end
 
         file1 = File.open(filename,'a+')
-        if not File.world_writable?(jobfile)
+        if not File.world_writable?(filename)
             file1.chmod(0777)
         end
 
@@ -260,15 +260,15 @@ if ARGV.length == 3
         jobid=""
         if data.length > 0
             jobid=doAttachVolume(vmid, zone, data)
-        str = "#{zone}|#{vmname}|#{vmid}|#{data}|#{jobid}"
-        jobfile = "/tmp/jobstatus_#{cdate}"
-        file1 = File.open(jobfile,'a+')
-        if not File.world_writable?(jobfile)
-            file1.chmod(0777)
+            str = "#{zone}|#{vmname}|#{vmid}|#{data}|#{jobid}"
+            jobfile = "/tmp/jobstatus_#{cdate}"
+            file1 = File.open(jobfile,'a+')
+            if not File.world_writable?(jobfile)
+                file1.chmod(0777)
+            end
+            file1.write "#{str}\n"
+            file1.close 
         end
-        file1.write "#{str}\n"
-        file1.close 
-    end
     end
     obj1 = getStatusVM(vmid, zone)
     vmname = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['displayname']
