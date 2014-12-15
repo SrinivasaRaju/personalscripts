@@ -14,7 +14,7 @@ if ARGV.length < 2
 	exit
 end
 
-if zone != 'general' or zone != 'compliant'
+if zone != ('general' or  'compliant')
 	puts "First agruments much be zone [general|compliant]"
 	exit
 end
@@ -46,7 +46,6 @@ projects.each {|proj|
 	projname=proj['name']
 	projid=proj['id']
 
-puts "#{projid} -- #{projname}"
 	cmd1 = "cloudstack -p #{zone} listVirtualMachines listall=true hostid=#{hostid} projectid=#{projid}"
 	stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd1}")
 
@@ -60,12 +59,13 @@ puts "#{projid} -- #{projname}"
 	if obj1['listvirtualmachinesresponse'].length !=0 
 		vmdata = obj1['listvirtualmachinesresponse']['virtualmachine']
 		vmdata.each {|vminf|
-			vmid = vminf['id']
-			vmname = vminf['displayname']
+		vmid = vminf['id']
+		vmname = vminf['displayname']
     		curxen = vminf['hostname']
     		seroff = vminf['serviceofferingname']
     		vgroup = vminf['group']
-    		tstr = "#{curxen},#{vmid},#{seroff},#{vgroup}"
+		instname = vminf['instancename']
+    		tstr = "#{curxen},#{vmid},#{vmname},#{instname},#{seroff},#{vgroup}"
     		allvminfo[cc]=tstr
     		cc += 1	
 		}
@@ -85,12 +85,13 @@ end
 if obj1['listvirtualmachinesresponse'].length !=0 
 	vmdata = obj1['listvirtualmachinesresponse']['virtualmachine']
 	vmdata.each {|vminf|
-		vmid = vminf['id']
-		vmname = vminf['displayname']
+	vmid = vminf['id']
+	vmname = vminf['displayname']
     	curxen = vminf['hostname']
     	seroff = vminf['serviceofferingname']
     	vgroup = vminf['group']
-    	tstr = "#{curxen},#{vmid},#{seroff},#{vgroup}"
+	instname = vminf['instancename']
+    	tstr = "#{curxen},#{vmid},#{vmname},#{instname},#{seroff},#{vgroup}"
     	allvminfo[cc]=tstr
     	cc += 1	
 	}
