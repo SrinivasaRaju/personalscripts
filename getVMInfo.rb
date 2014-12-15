@@ -14,7 +14,7 @@ if ARGV.length < 2
 	exit
 end
 
-if zone != 'general' || zone != 'compliant'
+if zone != 'general' or zone != 'compliant'
 	puts "First agruments much be zone [general|compliant]"
 	exit
 end
@@ -40,12 +40,13 @@ else
 end
 
 hostid=obj1['listhostsresponse']['host'][0]['id']
-data= Array.new
+allvminfo= Array.new
 cc = 0
 projects.each {|proj|
 	projname=proj['name']
 	projid=proj['id']
 
+puts "#{projid} -- #{projname}"
 	cmd1 = "cloudstack -p #{zone} listVirtualMachines listall=true hostid=#{hostid} projectid=#{projid}"
 	stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd1}")
 
@@ -56,12 +57,45 @@ projects.each {|proj|
     	obj1 = JSON.parse(str1)
 	end
 
-	vmid = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['id']
-	vmname = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['displayname']
-    curxen = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['hostname']
-    seroff = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['serviceofferingname']
-    vgroup = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['group']
-    tstr = "#{curxen},#{vmid},#{seroff},#{vgroup}"
-    data[cc]=tstr
-    cc += 1
+	if obj1['listvirtualmachinesresponse'].length !=0 
+		vmdata = obj1['listvirtualmachinesresponse']['virtualmachine']
+		vmdata.each {|vminf|
+			vmid = vminf['id']
+			vmname = vminf['displayname']
+    		curxen = vminf['hostname']
+    		seroff = vminf['serviceofferingname']
+    		vgroup = vminf['group']
+    		tstr = "#{curxen},#{vmid},#{seroff},#{vgroup}"
+    		allvminfo[cc]=tstr
+    		cc += 1	
+		}
+    end	
+}
+
+cmd1 = "cloudstack -p #{zone} listVirtualMachines listall=true hostid=#{hostid}"
+stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd1}")
+
+str1 = stdout1.read
+if str1.include? "Error 500"
+	puts "Not able to get requested details "
+else
+	obj1 = JSON.parse(str1)
+end
+
+if obj1['listvirtualmachinesresponse'].length !=0 
+	vmdata = obj1['listvirtualmachinesresponse']['virtualmachine']
+	vmdata.each {|vminf|
+		vmid = vminf['id']
+		vmname = vminf['displayname']
+    	curxen = vminf['hostname']
+    	seroff = vminf['serviceofferingname']
+    	vgroup = vminf['group']
+    	tstr = "#{curxen},#{vmid},#{seroff},#{vgroup}"
+    	allvminfo[cc]=tstr
+    	cc += 1	
+	}
+end	
+
+allvminfo.each {|val|
+	puts val
 }
