@@ -85,12 +85,12 @@ end
 if obj1['listvirtualmachinesresponse'].length !=0 
 	vmdata = obj1['listvirtualmachinesresponse']['virtualmachine']
 	vmdata.each {|vminf|
-	vmid = vminf['id']
-	vmname = vminf['displayname']
+		vmid = vminf['id']
+		vmname = vminf['displayname']
     	curxen = vminf['hostname']
     	seroff = vminf['serviceofferingname']
     	vgroup = vminf['group']
-	instname = vminf['instancename']
+		instname = vminf['instancename']
     	tstr = "#{curxen},#{vmid},#{vmname},#{instname},#{seroff},#{vgroup}"
     	allvminfo[cc]=tstr
     	cc += 1	
