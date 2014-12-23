@@ -376,7 +376,7 @@ class CloudstackInfoClass
 
             return data
         else
-        puts "Please pass prod|dev to script"
-    end
-
+            puts "Please pass prod|dev to script"
+        end
+    end    
 end
