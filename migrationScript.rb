@@ -32,11 +32,11 @@ OptionParser.new do |opts|
   		options[:task] = p
   	end
 
- 	opts.on('-m', '--vmid', "Pass VM ID") do |m|
+ 	  opts.on('-m', '--vmid', "Pass VM ID") do |m|
   		options[:vmid] = m
   	end
 	
-	opts.on('-s', '--storageid', "Pass Storage ID") do |s|
+	  opts.on('-s', '--storageid', "Pass Storage ID") do |s|
   		options[:storageid] = s
   	end
 
