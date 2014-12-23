@@ -9,7 +9,7 @@ class CloudstackInfoClass
 
 	end
 
-    def getAllVMfromXen(zone, xen)
+    def getAllVMfromXen(zone, xenname)
 
         cmd = "cloudstack -p #{zone} listProjects listall=true"
         stdin, stdout, stderr, wait_thr = Open3.popen3("#{cmd}")
@@ -67,7 +67,6 @@ class CloudstackInfoClass
 
         cmd1 = "cloudstack -p #{zone} listVirtualMachines listall=true hostid=#{hostid}"
         stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd1}")
-
         str1 = stdout1.read
         if str1.include? "Error 500"
             puts "Not able to get requested details "
@@ -78,16 +77,16 @@ class CloudstackInfoClass
         if obj1['listvirtualmachinesresponse'].length !=0 
             vmdata = obj1['listvirtualmachinesresponse']['virtualmachine']
             vmdata.each {|vminf|
-            vmid = vminf['id']
-            vmname = vminf['displayname']
-            curxen = vminf['hostname']
-            seroff = vminf['serviceofferingname']
-            vgroup = vminf['group']
-            instname = vminf['instancename']
-            tstr = "#{curxen},#{vmid},#{vmname},#{instname},#{seroff},#{vgroup}"
-            allvminfo[cc]=tstr
-            cc += 1 
-        }
+            	vmid = vminf['id']
+            	vmname = vminf['displayname']
+            	curxen = vminf['hostname']
+            	seroff = vminf['serviceofferingname']
+            	vgroup = vminf['group']
+            	instname = vminf['instancename']
+            	tstr = "#{curxen},#{vmid},#{vmname},#{instname},#{seroff},#{vgroup}"
+            	allvminfo[cc]=tstr
+            	cc += 1 
+       	    }
         end     
         return allvminfo
     end 

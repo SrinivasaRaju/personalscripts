@@ -61,9 +61,9 @@ end.parse!
 
 if options[:task] == 'listvm'
   if ARGV.length >= 1
-    xenname = ARGV[1]
+    options[:xenname] = ARGV[0]
     allvminfo = Array.new() 
-    CC.getAllVMfromXen(zone,xenname)
+    allvminfo = CC.getAllVMfromXen(options[:zone],options[:xenname])
 
     allvminfo.each {|val|
       puts val
@@ -73,5 +73,3 @@ if options[:task] == 'listvm'
   end
 end
 
-p options
-p ARGV
