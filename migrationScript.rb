@@ -64,7 +64,7 @@ if options[:task] == 'listvm'
     options[:xenname] = ARGV[0]
     allvminfo = Array.new() 
     allvminfo = CC.getAllVMfromXen(options[:zone],options[:xenname])
-
+    allvminfo.uniq
     allvminfo.each {|val|
       puts val
     }
