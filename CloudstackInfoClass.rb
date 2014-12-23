@@ -170,4 +170,119 @@ class CloudstackInfoClass
         return hash1
     end
 
+#  This function will detach all Extra Disk in VM and it need VMID, Zone(general/compliant) and Disk Array
+#  doDetachVolume(vmid, zone, data)
+#  
+    def doDetachVolume(vmid, zone, data)
+        obj1 = getVMStatus(vmid, zone)
+        status = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['state']
+        if status == "Stopped"
+            data.each_key { |diskid|  
+                cmd = "cloudstack -p #{zone} detachVolume id=#{diskid}"
+                stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd}")
+                obj2 = JSON.parse(stdout1.read.chomp)
+                jobid = obj2['detachvolumeresponse']['jobid']
+
+                cmd = "cloudstack -p #{zone} queryAsyncJobResult jobid=#{jobid}"
+                stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd}")
+                obj2 = JSON.parse(stdout1.read.chomp)
+                status = obj2['queryasyncjobresultresponse']['jobstatus']
+
+                puts "Disk is Detaching now "
+                while status != 1 do 
+                    print "."
+                    sleep 2
+                    cmd1 = "cloudstack -p #{zone} queryAsyncJobResult jobid=#{jobid}"
+                    stdin2, stdout2, stderr2, wait_thr2 = Open3.popen3("#{cmd}")
+                    obj3 = JSON.parse(stdout2.read.chomp)
+                    status = obj3['queryasyncjobresultresponse']['jobstatus']
+                end
+            }
+        puts "\n\n"
+        end
+    end
+
+#  This function will attach all Extra Disk in VM after migration and it need VMID, Zone(general/compliant) and Disk Array
+#  doAttachVolume(vmid, zone, data)
+#  It return Hash with disk and jobid
+    def doAttachVolume(vmid, zone, data)
+        obj1 = getVMStatus(vmid, zone)
+        status = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['state']
+        if status == "Running" or status == "Stopped"
+        data.each_key { |diskid|  
+            value = data[diskid]
+            cmd = "cloudstack -p #{zone} attachVolume id=#{diskid} virtualmachineid=#{vmid}"
+            stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd}")
+            obj2 = JSON.parse(stdout1.read.chomp)
+            jobid = obj2['attachvolumeresponse']['jobid']
+
+            cmd = "cloudstack -p #{zone} queryAsyncJobResult jobid=#{jobid}"
+            stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd}")
+            obj2 = JSON.parse(stdout1.read.chomp)
+            status = obj2['queryasyncjobresultresponse']['jobstatus']
+        
+            puts "\n\n"
+            puts "Disk is Attached now and jobid is #{jobid} ...."
+            puts "VM ID : #{vmid}, Disk ID : #{diskid}, #{value} " 
+
+            return jobid    
+        }
+        end
+    end
+
+#  This function will migrate the VM to different cluster and it need Zone(general/compliant), VMID and New Cluster Storage ID
+#  vmMigration(zone, vmid, stid)
+#  
+    def vmMigration(zone, vmid, stid)
+        cmd1 = "cloudstack -p #{zone} migrateVirtualMachine virtualmachineid=#{vmid} storageid=#{stid}"
+        stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd1}")
+        obj3 = JSON.parse(stdout1.read.chomp)
+        jobid = obj3['migratevirtualmachineresponse']['jobid']
+
+        cmd1 = "cloudstack -p #{zone} queryAsyncJobResult jobid=#{jobid}"
+        stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd1}")
+        obj1 = JSON.parse(stdout1.read.chomp)
+        status = obj1['queryasyncjobresultresponse']['jobstatus']
+        obj1 = getVMStatus(vmid, zone)
+        vmstatus = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['state']
+
+        puts "Migrating vm now .."
+        while status != 1 do
+            print "."
+            sleep 4
+            obj2 = getVMStatus(vmid, zone)
+            vmstatus = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['state']
+
+            cmd = "cloudstack -p #{zone} queryAsyncJobResult jobid=#{jobid}"
+            stdin2, stdout2, stderr2, wait_thr2 = Open3.popen3("#{cmd}")
+            obj3 = JSON.parse(stdout2.read.chomp)
+            status = obj3['queryasyncjobresultresponse']['jobstatus']
+
+            if status == 2 and vmstatus != "Stopped"
+                err =  obj3['queryasyncjobresultresponse']['jobresult']['errortext']
+                puts "Migration failed with #{err}"
+                exit    
+            end
+        end 
+        puts "\n\n"
+    end
+
+#  This function will check whether target storage is free or not and it need Zone(general/compliant) and New Cluster Storage ID
+#  getStorageStatus(zone, stid)
+#  It returns Total Percentage is current used.
+    def getStorageStatus(zone, stid)
+        cmd = "cloudstack -p #{zone} listStoragePools id=#{stid}"
+        stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd}")
+        obj1 = JSON.parse(stdout1.read.chomp)
+
+        name = obj1['liststoragepoolsresponse']['storagepool'][0]['name']
+        totDisk = obj1['liststoragepoolsresponse']['storagepool'][0]['disksizetotal']
+        useDisk = obj1['liststoragepoolsresponse']['storagepool'][0]['disksizeused']
+    
+        perUsed = ((useDisk * 100)/totDisk)
+        return perUsed
+    end
+
+
+
 end
