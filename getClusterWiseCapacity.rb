@@ -14,14 +14,14 @@ zonedet={'GN7_Prod1'=>'b7fa0802-79ff-4481-b68c-d3541315fee1',
 info1 = {'0' => 'Memory', '1' => 'CPU', '2' => 'Storage', '3' => 'Shared Disk', '9' => 'Local Disk'}
 
 cinfo="######## Compliant Cluster Usage Information ########\n"
-cinfo=cinfo + "Cluster Name \t\t CPU \t Memory \t Shared Disk \t Local Disk"
+cinfo=cinfo + "Cluster Name  ----  CPU  ----  Memory  ----  Shared Disk  ----  Local Disk \n"
 ccpuinfo="######## Compliant CPU ########\n"
 cmeminfo="######## Compliant Memory ########\n"
 csharedinfo="######## Compliant Shared Disk ########\n"
 clocalinfo="######## Compliant Local Disk ########\n"
 
-ginfo="######## Compliant Cluster Usage Information ########\n"
-ginfo=ginfo + "Cluster Name \t\t CPU \t Memory \t Shared Disk \t Local Disk"
+ginfo="######## General Cluster Usage Information ########\n"
+ginfo=ginfo + "Cluster Name  ----  CPU  ----  Memory  ----  Shared Disk  ----  Local Disk \n"
 gcpuinfo="######## General CPU ########\n"
 gmeminfo="######## General Memory ########\n"
 gsharedinfo="######## General Shared Disk ########\n"
@@ -67,7 +67,7 @@ if ARGV.length > 1
                 cloc = hash['percentused']
     	    end
 		}
-        cinfo = cinfo + "#{cname} \t\t #{ccpu} \t #{cmem} \t #{cshd} \t #{cloc} \n"
+        cinfo = cinfo + "#{cname}  ----  #{ccpu}  ----  #{cmem}  ----  #{cshd}  ----  #{cloc} \n"
 	end
 
     cmd1="cloudstack -p general listClusters zoneid=#{genzoneid} showcapacities=true"
@@ -95,7 +95,7 @@ if ARGV.length > 1
                 gloc = hash['percentused']
         	end
 		}
-        ginfo = ginfo + "#{cname} \t\t #{ccpu} \t #{cmem} \t #{cshd} \t #{cloc} \n"
+        ginfo = ginfo + "#{cname}  ----  #{gcpu}  ----  #{gmem}  ----  #{gshd}  ----  #{gloc} \n"
 	end
 
     if other == "compliant"
