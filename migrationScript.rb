@@ -14,10 +14,12 @@ options = {
 	:storageid => false,
 	:xenname => false,
   :clustname => false,
+  :zonedet => false,
 	:verbose => false
 }
 
 CC = CloudstackInfoClass.new
+PP = getPodClusterInfo.new
 
 OptionParser.new do |opts|
   	opts.banner = "Usage: migrationScript.rb -p zone -p task [options] "
@@ -42,6 +44,10 @@ OptionParser.new do |opts|
   		options[:storageid] = s
   	end
 
+    opts.on('-z', '--poddet', "Pod Name [prod/dev]") do |s|
+      options[:storageid] = s
+    end
+
     opts.on('-c', '--clustname', "Pass Cluster Name") do |s|
       options[:storageid] = s
     end
@@ -57,7 +63,7 @@ Examples:
   migrationScript.rb -p general -t listvm -x n7pdxen150  [For getting VM list from Xen]
   migrationScript.rb -p general -t migrate -m vmid -s storageid [For migration vm to different cluster]
   migrationScript.rb -p general -t statusjob
-  migrationScript.rb -p general -t storageinfo
+  migrationScript.rb -p general -t podinfo -z [prod/dev]
   migrationScript.rb -p general -t clusterinfo -c clustername
 __USAGE__
     puts opts
@@ -156,4 +162,18 @@ exit
     puts "Need to pass vm and storage id for migration"
     puts "migrationScript.rb -p general -t migrate -m vmid -s storageid [For migration vm to different cluster]" 
   end 
+
+elsif options[:task] == 'podinfo'
+  if options[:poddet] == true
+    data=PP.getClusterWiseCapacity(options[:poddet],options[:zone])
+
+    if options[:zone] == 'general'
+      data[9]
+    elsif options[:zone] == 'compliant'
+      data[8]
+    end
+  else
+    puts "Please pass [prod/dev] to script with -z"
+    puts "migrationScript.rb -p general -t podinfo -z [prod/dev]"
+  end
 end

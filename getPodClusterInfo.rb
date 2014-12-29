@@ -25,14 +25,14 @@ class getPodClusterInfo
         info1 = {'0' => 'Memory', '1' => 'CPU', '2' => 'Storage', '3' => 'Shared Disk', '9' => 'Local Disk'}
 
         cinfo="######## Compliant Cluster Usage Information ########\n"
-        cinfo=cinfo + "Cluster Name \t\t CPU \t Memory \t Shared Disk \t Local Disk"
+        cinfo=cinfo + "Cluster Name  ----  CPU  ----  Memory  ----  Shared Disk  ----  Local Disk \n"
         ccpuinfo="######## Compliant CPU ########\n"
         cmeminfo="######## Compliant Memory ########\n"
         csharedinfo="######## Compliant Shared Disk ########\n"
         clocalinfo="######## Compliant Local Disk ########\n"
 
         ginfo="######## Compliant Cluster Usage Information ########\n"
-        ginfo=ginfo + "Cluster Name \t\t CPU \t Memory \t Shared Disk \t Local Disk"
+        ginfo=ginfo + "Cluster Name  ----  CPU  ----  Memory  ----  Shared Disk  ----  Local Disk \n"
         gcpuinfo="######## General CPU ########\n"
         gmeminfo="######## General Memory ########\n"
         gsharedinfo="######## General Shared Disk ########\n"
@@ -73,10 +73,9 @@ class getPodClusterInfo
                     elsif tt == 9
                         clocalinfo = clocalinfo + "#{cname} ----- #{hash['percentused']} \n"
                     	cloc=hash['percentused']
-                    end
-                    
+                    end 
                 }
-                cinfo = cinfo + "#{cname} \t\t #{ccpu} \t #{cmem} \t #{cshd} \t #{cloc} \n"
+                cinfo = cinfo + "#{cname}  ----  #{ccpu}  ----  #{cmem}  ----  #{cshd}  ----  #{cloc} \n"
             end
 
             cmd1="cloudstack -p general listClusters zoneid=#{genzoneid} showcapacities=true"
@@ -104,7 +103,7 @@ class getPodClusterInfo
                     gloc = hash['percentused']
                 end
             }
-            ginfo = ginfo + "#{cname} \t\t #{ccpu} \t #{cmem} \t #{cshd} \t #{cloc} \n"
+            ginfo = ginfo + "#{cname}  ----  #{gcpu}  ----  #{gmem}  ----  #{gshd}  ----  #{gloc} \n"
             end
 
             data[0]=cmeminfo
@@ -116,6 +115,9 @@ class getPodClusterInfo
             data[5]=gcpuinfo
             data[6]=gsharedinfo
             data[7]=gsharedinfo
+
+            data[8]=cinfo
+            data[9]=ginfo
 
             return data
         else
