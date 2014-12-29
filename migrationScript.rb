@@ -14,16 +14,15 @@ options = {
 	:storageid => false,
 	:xenname => false,
   :clustname => false,
-  :envir => false,
 	:verbose => false
 }
 
 CC = CloudstackInfoClass.new
 
 OptionParser.new do |opts|
-  	opts.banner = "Usage: migrationScript [options] "
+  	opts.banner = "Usage: migrationScript.rb -p zone -p task [options] "
 
-  	opts.on('-v', "First Migration Script") do |v|
+  	opts.on('-v', "Migration Script Help Page") do |v|
   		options[:verbose] = v
   	end
 
@@ -158,4 +157,3 @@ exit
     puts "migrationScript.rb -p general -t migrate -m vmid -s storageid [For migration vm to different cluster]" 
   end 
 end
-
