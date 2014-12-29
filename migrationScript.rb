@@ -81,9 +81,10 @@ if options[:task] == 'listvm'
   end
 
 elsif options[:task] == 'migrate'
-  puts options[:zone]+","+options[:vmid]+","+options[:storageid]
+  puts "#{options[:zone]},#{options[:vmid]},#{options[:storageid]}"
   if options[:vmid] == false or options[:storageid] == false
     puts "Need to pass vm and storage id for migration"
+    puts "migrationScript.rb -p general -t migrate -m vmid -s storageid [For migration vm to different cluster]" 
   end 
 end
 
