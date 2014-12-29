@@ -13,11 +13,15 @@ zonedet={'GN7_Prod1'=>'b7fa0802-79ff-4481-b68c-d3541315fee1',
 }
 info1 = {'0' => 'Memory', '1' => 'CPU', '2' => 'Storage', '3' => 'Shared Disk', '9' => 'Local Disk'}
 
+cinfo="######## Compliant Cluster Usage Information ########\n"
+cinfo=cinfo + "Cluster Name \t\t CPU \t Memory \t Shared Disk \t Local Disk"
 ccpuinfo="######## Compliant CPU ########\n"
 cmeminfo="######## Compliant Memory ########\n"
 csharedinfo="######## Compliant Shared Disk ########\n"
 clocalinfo="######## Compliant Local Disk ########\n"
 
+ginfo="######## Compliant Cluster Usage Information ########\n"
+ginfo=ginfo + "Cluster Name \t\t CPU \t Memory \t Shared Disk \t Local Disk"
 gcpuinfo="######## General CPU ########\n"
 gmeminfo="######## General Memory ########\n"
 gsharedinfo="######## General Shared Disk ########\n"
@@ -41,6 +45,9 @@ if ARGV.length > 1
         obj = JSON.parse(outp)
         cc=obj['listclustersresponse']['count']
 
+        cmem=0,ccpu=0,cshd=0,cloc=0 
+        gmem=0,gcpu=0,gshd=0,gloc=0
+
         for i in 0...cc
 		cname=obj['listclustersresponse']['cluster'][i]['name']
 		array = obj['listclustersresponse']['cluster'][i]['capacity']
@@ -48,14 +55,19 @@ if ARGV.length > 1
 			tt=hash['type']
         	if tt == 0
             	cmeminfo = cmeminfo + "#{cname} ----- #{hash['percentused']} \n"
+                cmem = hash['percentused']
     		elsif tt == 1
-            	ccpuinfo = ccpuinfo + "#{cname} ----- #{hash['percentused']} \n"        		
+            	ccpuinfo = ccpuinfo + "#{cname} ----- #{hash['percentused']} \n"
+                ccpu = hash['percentused']        		
             elsif tt == 3
             	csharedinfo = csharedinfo + "#{cname} ----- #{hash['percentused']} \n"
+                cshd = hash['percentused']
     		elsif tt == 9
             	clocalinfo = clocalinfo + "#{cname} ----- #{hash['percentused']} \n"
+                cloc = hash['percentused']
     	    end
 		}
+        cinfo = cinfo + "#{cname} \t\t #{ccpu} \t #{cmem} \t #{cshd} \t #{cloc} \n"
 	end
 
     cmd1="cloudstack -p general listClusters zoneid=#{genzoneid} showcapacities=true"
@@ -70,15 +82,20 @@ if ARGV.length > 1
 		array1.each {|hash|
 		tt1=hash['type']
         	if tt1 == 0
-                	gmeminfo = gmeminfo + "#{cname} ----- #{hash['percentused']} \n"
+                gmeminfo = gmeminfo + "#{cname} ----- #{hash['percentused']} \n"
+                gmem = hash['percentused']
         	elsif tt1 == 1
-                	gcpuinfo = gcpuinfo + "#{cname} ----- #{hash['percentused']} \n"
+                gcpuinfo = gcpuinfo + "#{cname} ----- #{hash['percentused']} \n"
+                gcpu = hash['percentused']
         	elsif tt1 == 3
-                	gsharedinfo = gsharedinfo + "#{cname} ----- #{hash['percentused']} \n"
+                gsharedinfo = gsharedinfo + "#{cname} ----- #{hash['percentused']} \n"
+                cshd = hash['percentused']
         	elsif tt1 == 9
-                	glocalinfo = glocalinfo + "#{cname} ----- #{hash['percentused']} \n"
+                glocalinfo = glocalinfo + "#{cname} ----- #{hash['percentused']} \n"
+                gloc = hash['percentused']
         	end
 		}
+        ginfo = ginfo + "#{cname} \t\t #{ccpu} \t #{cmem} \t #{cshd} \t #{cloc} \n"
 	end
 
     if other == "compliant"
@@ -86,11 +103,13 @@ if ARGV.length > 1
 	   puts ccpuinfo
 	   puts csharedinfo
 	   puts clocalinfo
+       puts cinfo
 	elsif other == "general"
        puts gmeminfo
 	   puts gcpuinfo
 	   puts gsharedinfo
 	   puts glocalinfo
+       puts ginfo
     else
        puts cmeminfo
        puts ccpuinfo
@@ -99,7 +118,10 @@ if ARGV.length > 1
        puts gmeminfo
        puts gcpuinfo
        puts gsharedinfo
-       puts glocalinfo 
+       puts glocalinfo
+
+       puts cinfo
+       puts ginfo 
     end
     else
         puts "Please pass prod|dev to script"

@@ -24,11 +24,15 @@ class getPodClusterInfo
         
         info1 = {'0' => 'Memory', '1' => 'CPU', '2' => 'Storage', '3' => 'Shared Disk', '9' => 'Local Disk'}
 
+        cinfo="######## Compliant Cluster Usage Information ########\n"
+        cinfo=cinfo + "Cluster Name \t\t CPU \t Memory \t Shared Disk \t Local Disk"
         ccpuinfo="######## Compliant CPU ########\n"
         cmeminfo="######## Compliant Memory ########\n"
         csharedinfo="######## Compliant Shared Disk ########\n"
         clocalinfo="######## Compliant Local Disk ########\n"
 
+        ginfo="######## Compliant Cluster Usage Information ########\n"
+        ginfo=ginfo + "Cluster Name \t\t CPU \t Memory \t Shared Disk \t Local Disk"
         gcpuinfo="######## General CPU ########\n"
         gmeminfo="######## General Memory ########\n"
         gsharedinfo="######## General Shared Disk ########\n"
@@ -49,6 +53,8 @@ class getPodClusterInfo
             obj = JSON.parse(stdout1.read.chomp)
 
             cc=obj['listclustersresponse']['count']
+            cmem=0,ccpu=0,cshd=0,cloc=0 
+			gmem=0,gcpu=0,gshd=0,gloc=0 
 
             for i in 0...cc
                 cname=obj['listclustersresponse']['cluster'][i]['name']
@@ -57,14 +63,20 @@ class getPodClusterInfo
                     tt=hash['type']
                     if tt == 0
                         cmeminfo = cmeminfo + "#{cname} ----- #{hash['percentused']} \n"
+                        cmem = hash['percentused']	
                     elsif tt == 1
-                        ccpuinfo = ccpuinfo + "#{cname} ----- #{hash['percentused']} \n"                
+                        ccpuinfo = ccpuinfo + "#{cname} ----- #{hash['percentused']} \n"
+                        ccpu=hash['percentused']                
                     elsif tt == 3
                         csharedinfo = csharedinfo + "#{cname} ----- #{hash['percentused']} \n"
+                    	cshd=hash['percentused']
                     elsif tt == 9
                         clocalinfo = clocalinfo + "#{cname} ----- #{hash['percentused']} \n"
+                    	cloc=hash['percentused']
                     end
+                    
                 }
+                cinfo = cinfo + "#{cname} \t\t #{ccpu} \t #{cmem} \t #{cshd} \t #{cloc} \n"
             end
 
             cmd1="cloudstack -p general listClusters zoneid=#{genzoneid} showcapacities=true"
@@ -80,14 +92,19 @@ class getPodClusterInfo
             tt1=hash['type']
                 if tt1 == 0
                     gmeminfo = gmeminfo + "#{cname} ----- #{hash['percentused']} \n"
+                    gmem = hash['percentused']
                 elsif tt1 == 1
                     gcpuinfo = gcpuinfo + "#{cname} ----- #{hash['percentused']} \n"
+                    gcpu = hash['percentused']
                 elsif tt1 == 3
                     gsharedinfo = gsharedinfo + "#{cname} ----- #{hash['percentused']} \n"
+                    gshd = hash['percentused']
                 elsif tt1 == 9
                     glocalinfo = glocalinfo + "#{cname} ----- #{hash['percentused']} \n"
+                    gloc = hash['percentused']
                 end
             }
+            ginfo = ginfo + "#{cname} \t\t #{ccpu} \t #{cmem} \t #{cshd} \t #{cloc} \n"
             end
 
             data[0]=cmeminfo
