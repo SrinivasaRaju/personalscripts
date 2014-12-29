@@ -169,7 +169,7 @@ class CloudstackInfoClass
         else
             obj = JSON.parse(str)
             if obj['listvolumesresponse'].length == 0
-                puts "this is not getting disk details"
+                puts "this vm is not getting disk details"
             else
 
                 if obj['listvolumesresponse']['count'] >= 2
@@ -179,7 +179,7 @@ class CloudstackInfoClass
                     disktype = hash['type']
                     diskname = hash['name']
                     if disktype == "DATADISK"
-                        hash1[diskid] = "#{diskname},#{disktype}"
+                        hash1[diskid] = "#{diskname}"
                     end
                     }
                 end
@@ -276,7 +276,7 @@ class CloudstackInfoClass
             obj3 = JSON.parse(stdout2.read.chomp)
             status = obj3['queryasyncjobresultresponse']['jobstatus']
 
-            if status == 2 and vmstatus != "Stopped"
+            if status == 2 and vmstatus == "Stopped"
                 err =  obj3['queryasyncjobresultresponse']['jobresult']['errortext']
                 puts "Migration failed with #{err}"
                 exit    
@@ -396,5 +396,14 @@ class CloudstackInfoClass
         else
             puts "Please pass prod|dev to script"
         end
+    end
+
+    def writeInfotoFile(filename,info)
+        file1 = File.open(filename,'a+')
+        if not File.world_writable?(jobfile)
+            file1.chmod(0777)
+        end
+        file1.write "#{info}\n"
+        file1.close
     end    
 end
