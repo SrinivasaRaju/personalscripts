@@ -49,7 +49,7 @@ Show this message
 
 Examples:
   migrationScript -p general -t listvm -x n7pdxen150  [For getting VM list from Xen]
-  migrationScript -p general -t migration -m vmid -s storageid [For migration vm to different cluster]
+  migrationScript -p general -t migrate -m vmid -s storageid [For migration vm to different cluster]
   migrationScript -p general -t statusjob
   migrationScript -p general -t storageinfo
 
@@ -58,6 +58,14 @@ __USAGE__
     exit
     end  	
 end.parse!
+
+
+# Get current date.
+current = DateTime.now
+cdate = "#{current.day}#{current.month}#{current.year}"
+cdate.chomp
+
+filename = "/tmp/migrationwork_#{cdate}"
 
 if options[:task] == 'listvm'
   if ARGV.length >= 1
@@ -71,5 +79,11 @@ if options[:task] == 'listvm'
   else
     puts "Please pass xen server name to get list"
   end
+
+elsif options[:task] == 'migrate'
+  puts options[:zone]+","+options[:vmid]+","+options[:storageid]
+  if options[:vmid] == false or options[:storageid] == false
+    puts "Need to pass vm and storage id for migration"
+  end 
 end
 

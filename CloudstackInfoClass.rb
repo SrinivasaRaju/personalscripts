@@ -9,6 +9,20 @@ class CloudstackInfoClass
 
 	end
 
+    def getCommandStatus(cmd)
+        stdin, stdout, stderr, wait_thr = Open3.popen3("#{cmd}")
+        data = stdout.read
+        es = wait_thr.value
+        if es.success?
+            obj = JSON.parse(data)
+            status=0
+        else
+            obj = JSON.parse(data)
+            status=1
+        end
+        return obj,status
+    end
+
 #  This function is for getting all VM's list in one xen server and it need zone(general/compliant) and Xen Name 
 #  getAllVMfromXen(zone, xenname)
 #  It will return Array that contains All VM's list
@@ -16,12 +30,16 @@ class CloudstackInfoClass
     def getAllVMfromXen(zone, xenname)
 
         cmd = "cloudstack -p #{zone} listProjects listall=true"
-        stdin, stdout, stderr, wait_thr = Open3.popen3("#{cmd}")
-        str = stdout.read
-        if str.include? "Error 500"
-            puts "Not able to get Project Details"
-        else
-            obj = JSON.parse(str)
+        obj,status=getCommandStatus(cmd)
+        #stdin, stdout, stderr, wait_thr = Open3.popen3("#{cmd}")
+        #str = stdout.read
+        #if str.include? "Error 500"
+        #    puts "Not able to get Project Details"
+        #else
+        #    obj = JSON.parse(str)
+        #end
+        if status == 1
+                
         end
 
         projects = obj['listprojectsresponse']['project']
