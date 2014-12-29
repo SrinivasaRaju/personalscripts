@@ -3,7 +3,7 @@
 require "open3"
 require "json"
 
-class getPodClusterInfo
+class GetPodClusterInfo
 
 	def initialize
 
@@ -31,7 +31,7 @@ class getPodClusterInfo
         csharedinfo="######## Compliant Shared Disk ########\n"
         clocalinfo="######## Compliant Local Disk ########\n"
 
-        ginfo="######## Compliant Cluster Usage Information ########\n"
+        ginfo="######## General Cluster Usage Information ########\n"
         ginfo=ginfo + "Cluster Name  ----  CPU  ----  Memory  ----  Shared Disk  ----  Local Disk \n"
         gcpuinfo="######## General CPU ########\n"
         gmeminfo="######## General Memory ########\n"

@@ -5,7 +5,7 @@ require "open3"
 require "json"
 require "date"
 require "./CloudstackInfoClass"
-require "./getPodClusterInfo"
+require "./GetPodClusterInfo"
 
 options = {
 	:zone => 'default',
@@ -19,7 +19,7 @@ options = {
 }
 
 CC = CloudstackInfoClass.new
-PP = getPodClusterInfo.new
+PP = GetPodClusterInfo.new
 
 OptionParser.new do |opts|
   	opts.banner = "Usage: migrationScript.rb -p zone -p task [options] "
