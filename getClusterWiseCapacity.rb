@@ -89,7 +89,7 @@ if ARGV.length > 1
                 gcpu = hash['percentused']
         	elsif tt1 == 3
                 gsharedinfo = gsharedinfo + "#{cname} ----- #{hash['percentused']} \n"
-                cshd = hash['percentused']
+                gshd = hash['percentused']
         	elsif tt1 == 9
                 glocalinfo = glocalinfo + "#{cname} ----- #{hash['percentused']} \n"
                 gloc = hash['percentused']
