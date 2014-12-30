@@ -14,7 +14,7 @@ class GetPodClusterInfo
 #  It returns Array with all current usage information.
 
     def getClusterWiseCapacity(envir, zone)
-        data = Arrary.new
+        data = Array.new
         zonedet={
         'GN7_Prod1'=>'b7fa0802-79ff-4481-b68c-d3541315fee1',
         'GN7_Dev1' => '7c1b8a2e-9107-4a0c-ba88-c483074d074b',
@@ -53,10 +53,9 @@ class GetPodClusterInfo
             obj = JSON.parse(stdout1.read.chomp)
 
             cc=obj['listclustersresponse']['count']
-            cmem=0,ccpu=0,cshd=0,cloc=0 
-			gmem=0,gcpu=0,gshd=0,gloc=0 
 
             for i in 0...cc
+                cmem=0,ccpu=0,cshd=0,cloc=0 
                 cname=obj['listclustersresponse']['cluster'][i]['name']
                 array = obj['listclustersresponse']['cluster'][i]['capacity']
                 array.each {|hash|
@@ -85,25 +84,26 @@ class GetPodClusterInfo
             cc1=obj1['listclustersresponse']['count']
 
             for i in 0...cc1
-            cname=obj1['listclustersresponse']['cluster'][i]['name']
-            array1 = obj1['listclustersresponse']['cluster'][i]['capacity']
-            array1.each {|hash|
-            tt1=hash['type']
-                if tt1 == 0
-                    gmeminfo = gmeminfo + "#{cname} ----- #{hash['percentused']} \n"
-                    gmem = hash['percentused']
-                elsif tt1 == 1
-                    gcpuinfo = gcpuinfo + "#{cname} ----- #{hash['percentused']} \n"
-                    gcpu = hash['percentused']
-                elsif tt1 == 3
-                    gsharedinfo = gsharedinfo + "#{cname} ----- #{hash['percentused']} \n"
-                    gshd = hash['percentused']
-                elsif tt1 == 9
-                    glocalinfo = glocalinfo + "#{cname} ----- #{hash['percentused']} \n"
-                    gloc = hash['percentused']
-                end
-            }
-            ginfo = ginfo + "#{cname}  ----  #{gcpu}  ----  #{gmem}  ----  #{gshd}  ----  #{gloc} \n"
+	    	gmem=0,gcpu=0,gshd=0,gloc=0 
+            	cname=obj1['listclustersresponse']['cluster'][i]['name']
+            	array1 = obj1['listclustersresponse']['cluster'][i]['capacity']
+            	array1.each {|hash|
+            	   tt1=hash['type']
+                   if tt1 == 0
+                    	gmeminfo = gmeminfo + "#{cname} ----- #{hash['percentused']} \n"
+                    	gmem = hash['percentused']
+                   elsif tt1 == 1
+                    	gcpuinfo = gcpuinfo + "#{cname} ----- #{hash['percentused']} \n"
+                    	gcpu = hash['percentused']
+                   elsif tt1 == 3
+                    	gsharedinfo = gsharedinfo + "#{cname} ----- #{hash['percentused']} \n"
+                    	gshd = hash['percentused']
+                   elsif tt1 == 9
+                    	glocalinfo = glocalinfo + "#{cname} ----- #{hash['percentused']} \n"
+                    	gloc = hash['percentused']
+                   end
+              	}
+                ginfo = ginfo + "#{cname}  ----  #{gcpu}  ----  #{gmem}  ----  #{gshd}  ----  #{gloc} \n"
             end
 
             data[0]=cmeminfo

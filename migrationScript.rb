@@ -5,7 +5,7 @@ require "open3"
 require "json"
 require "date"
 require "./CloudstackInfoClass"
-require "./GetPodClusterInfo"
+require "./getPodClusterInfo"
 
 options = {
 	:zone => 'default',
@@ -13,8 +13,8 @@ options = {
 	:vmid => false,
 	:storageid => false,
 	:xenname => false,
-  :clustname => false,
-  :zonedet => false,
+  	:clustname => false,
+  	:zonedet => false,
 	:verbose => false
 }
 
@@ -44,13 +44,13 @@ OptionParser.new do |opts|
   		options[:storageid] = s
   	end
 
-    opts.on('-z', '--poddet', "Pod Name [prod/dev]") do |s|
-      options[:storageid] = s
-    end
+    	opts.on('-z', '--poddet', "Pod Name [prod/dev]") do |z|
+      		options[:zonedet] = z
+    	end
 
-    opts.on('-c', '--clustname', "Pass Cluster Name") do |s|
-      options[:storageid] = s
-    end
+    	opts.on('-c', '--clustname', "Pass Cluster Name") do |c|
+      		options[:clustname] = c
+    	end
 
   	opts.on('-x', '--xenname', "Xen Server Name") do |x|
   		options[:xenname] = x
@@ -164,13 +164,14 @@ exit
   end 
 
 elsif options[:task] == 'podinfo'
-  if options[:poddet] == true
-    data=PP.getClusterWiseCapacity(options[:poddet],options[:zone])
-
-    if options[:zone] == 'general'
-      data[9]
-    elsif options[:zone] == 'compliant'
-      data[8]
+  data = Array.new
+  if options[:zonedet] == true
+    options[:zonedet]=ARGV[0]
+    data=PP.getClusterWiseCapacity(options[:zonedet],options[:zone])
+    if options[:zone] == "general"
+      puts "#{data[9]}"
+    elsif options[:zone] == "compliant"
+      puts "#{data[8]}"
     end
   else
     puts "Please pass [prod/dev] to script with -z"
