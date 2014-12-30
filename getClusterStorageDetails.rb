@@ -34,7 +34,7 @@ if ARGV.length >= 2
             totDisk1 = hash['disksizetotal']
             useDisk1 = hash['disksizeused']
             perUsed1 = ((useDisk1 * 100)/totDisk1)
-    	    localStorage[l]=hash['id']+"\t#{perUsed}"
+    	    localStorage[l]=hash['id']+"\t#{perUsed1}"
     	    l +=1	
     	end	
     }
