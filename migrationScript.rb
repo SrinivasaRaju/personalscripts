@@ -13,9 +13,10 @@ options = {
 	:vmid => false,
 	:storageid => false,
 	:xenname => false,
-  	:clustname => false,
-  	:zonedet => false,
-	:verbose => false
+  :clustname => false,
+  :zonedet => false,
+	:verbose => false,
+  :optinfo => false
 }
 
 CC = CloudstackInfoClass.new
@@ -51,6 +52,10 @@ OptionParser.new do |opts|
     	opts.on('-c', '--clustname', "Pass Cluster Name") do |c|
       		options[:clustname] = c
     	end
+
+      opts.on('-o', '--optinfo', "Options for display") do |o|
+          options[:optinfo] = o
+      end
 
   	opts.on('-x', '--xenname', "Xen Server Name") do |x|
   		options[:xenname] = x
@@ -176,5 +181,18 @@ elsif options[:task] == 'podinfo'
   else
     puts "Please pass [prod/dev] to script with -z"
     puts "migrationScript.rb -p general -t podinfo -z [prod/dev]"
+  end
+
+elsif options[:task] == 'clusterinfo'
+  if options[:clustname] == true
+    options[:clustname] = ARGV[0]
+    options[:optinfo] = ARGV[1]
+    data = PP.getClusterStorageDetails(options[:zone],options[:clustname],options[:optinfo])
+    data.each {|line|
+      puts line
+    }  
+  else
+    puts "Please cluster name for displaying usage of it"
+    puts "example : migrationScript.rb -p general -t clusterinfo -c N7_Dev1_HPDL380G8_P1_C4 [-o [shared/local/hosts]]"
   end
 end

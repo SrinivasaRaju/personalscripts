@@ -124,4 +124,64 @@ class GetPodClusterInfo
             puts "Please pass prod|dev to script"
         end
     end
+
+    def getClusterStorageDetails(zone,cluname,dtype)
+        cmd = "cloudstack -p #{zone} listClusters name=#{cluname}"
+        stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd}")
+        obj1 = JSON.parse(stdout1.read.chomp)
+
+        clustid = obj1['listclustersresponse']['cluster'][0]['id']
+
+        if clustid.length < 3
+            puts "#{cluname} is not present in #{zone}, please check once and pass correct cluster name"
+            exit
+        end
+
+        cmd = "cloudstack -p #{zone} listStoragePools clusterid=#{clustid}"
+        stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd}")
+        obj1 = JSON.parse(stdout1.read.chomp)
+
+        localStorage = Array.new
+        shardStorage = Array.new
+        l=0,s=0
+        
+        data = obj1['liststoragepoolsresponse']['storagepool']
+        data.each {|hash|
+            if hash['scope'] == "CLUSTER"
+                totDisk = hash['disksizetotal']
+                useDisk = hash['disksizeused']
+                perUsed = ((useDisk * 100)/totDisk)
+                shardStorage[s]=hash['id']+"\t#{perUsed}"
+                s +=1
+            elsif hash['scope'] == "HOST"
+                totDisk1 = hash['disksizetotal']
+                useDisk1 = hash['disksizeused']
+                perUsed1 = ((useDisk1 * 100)/totDisk1)
+                localStorage[l]=hash['id']+"\t#{perUsed}"
+                l +=1   
+            end 
+        }
+
+        cmd = "cloudstack -p #{zone} listHosts clusterid=#{clustid}"
+        stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd}")
+        obj1 = JSON.parse(stdout1.read.chomp)
+
+        host = Array.new
+        h=0
+        data1 = obj1['listhostsresponse']['host']
+        data1.each {|hash1|
+            host[h] = hash1['name']
+            h +=1
+        }
+
+        if dtype == 'shared'
+            return shardStorage
+        elsif dtype == 'local'
+            return localStorage
+        elsif dtype == 'host'
+            return host
+        else
+            return shardStorage | localStorage
+        end
+    end
 end
