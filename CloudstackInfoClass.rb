@@ -340,6 +340,7 @@ class CloudstackInfoClass
                     diskid = hash['id']
                     disktype = hash['type']
                     diskname = hash['name']
+		}
                 end
             end
         end    
