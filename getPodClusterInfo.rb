@@ -84,7 +84,7 @@ class GetPodClusterInfo
             cc1=obj1['listclustersresponse']['count']
 
             for i in 0...cc1
-	    	gmem=0,gcpu=0,gshd=0,gloc=0 
+	    	gmem,gcpu,gshd,gloc=0,0,0,0 
             	cname=obj1['listclustersresponse']['cluster'][i]['name']
             	array1 = obj1['listclustersresponse']['cluster'][i]['capacity']
             	array1.each {|hash|
@@ -143,22 +143,23 @@ class GetPodClusterInfo
 
         localStorage = Array.new
         shardStorage = Array.new
-        l=0,s=0
+        l1,s1=0,0
         
         data = obj1['liststoragepoolsresponse']['storagepool']
         data.each {|hash|
+	    totDisk,useDisk,perUsed=0,0,0
             if hash['scope'] == "CLUSTER"
                 totDisk = hash['disksizetotal']
                 useDisk = hash['disksizeused']
                 perUsed = ((useDisk * 100)/totDisk)
-                shardStorage[s]=hash['id']+"\t#{perUsed}"
-                s +=1
+                shardStorage[s1]="#{hash['id']} \t #{perUsed}"
+                s1 +=1
             elsif hash['scope'] == "HOST"
-                totDisk1 = hash['disksizetotal']
-                useDisk1 = hash['disksizeused']
-                perUsed1 = ((useDisk1 * 100)/totDisk1)
-                localStorage[l]=hash['id']+"\t#{perUsed}"
-                l +=1   
+                totDisk = hash['disksizetotal']
+                useDisk = hash['disksizeused']
+                perUsed = ((useDisk * 100)/totDisk)
+                localStorage[l1] = "#{hash['id']} \t #{perUsed}" 
+                l1  += 1   
             end 
         }
 
@@ -178,7 +179,7 @@ class GetPodClusterInfo
             return shardStorage
         elsif dtype == 'local'
             return localStorage
-        elsif dtype == 'host'
+        elsif dtype == 'hosts'
             return host
         else
             return shardStorage | localStorage
