@@ -96,17 +96,18 @@ if options[:task] == 'listvm'
   end
 
 elsif options[:task] == 'migrate'
-  puts "#{options[:zone]},#{options[:vmid]},#{options[:storageid]}"
   if options[:vmid] == true and options[:storageid] == true
-    perUsed = CM.getStorageStatus(options[:zone], options[:storageid])
-puts perUsed
-exit
+
+    options[:vmid] = ARGV[0]
+    options[:storageid] = ARGV[1]
+
+    perUsed = CC.getStorageStatus(options[:zone], options[:storageid])
     if perUsed >= 90
-      puts "Already #{stid} is filled up #{perUsed}, please use any other storage"
+      puts "Already #{options[:storageid]} is filled up #{perUsed}, please use any other storage"
       exit
     end
 
-    obj1 = CM.getVMStatus(options[:vmid], options[:zone])
+    obj1 = CC.getVMStatus(options[:vmid], options[:zone])
     vmname = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['displayname']
     curxen = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['hostname']
     status = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['state']
@@ -114,15 +115,14 @@ exit
     if status == "Running"
       puts "Stopping #{vmname} now .."
       cmd="cloudstack -p #{options[:zone]} stopVirtualMachine id=#{options[:vmid]} forced=true"
-      obj,stat = CM.getCommandStatus(cmd)
+      obj,stat = CC.getCommandStatus(cmd)
 
       status = "Running"
-      
       if stat == 0
         while status != "Stopped" do
           print "."
           sleep 2
-          obj2 = CM.getVMStatus(options[:vmid], options[:zone])
+          obj2 = CC.getVMStatus(options[:vmid], options[:zone])
           status = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['state']
         end
         print "\n\n"
@@ -136,31 +136,31 @@ exit
 
     #Below steps will get the additional disk information for this vm
     data = Hash.new
-    data = CM.getDiskInfo(options[:vmid], options[:zone])
+    data = CC.getDiskInfo(options[:vmid], options[:zone])
 
     #Now Detaching additional disk from this vm and storaging information in file
     if data.length > 0
-      doDetachVolume(vmid, zone, data)
+      CC.doDetachVolume(options[:vmid], options[:zone], data)
     end
 
     filename = "/tmp/migrationwork_#{cdate}"
-    str="#{vmname},#{vmid},#{curxen},#{data}\n"
-    CM.writeInfotoFile(filename,str)        
+    str="#{vmname},#{options[:vmid]},#{curxen},#{data}\n"
+    CC.writeInfotoFile(filename,str)        
         
     #Now this vm will be migration to new storage
-    CM.vmMigration(options[:zone], options[:vmid], options[:storageid])
+    CC.vmMigration(options[:zone], options[:vmid], options[:storageid])
 
     #Now starting the VM after migration is completed
-    CM.startVMNow(options[:zone], options[:vmid])
+    CC.startVMNow(options[:zone], options[:vmid])
     jobid=""
     if data.length > 0
-      jobid=CM.doAttachVolume(vmid, zone, data)
-      str = "#{zone}|#{vmname}|#{vmid}|#{data}|#{jobid}"
+      jobid=CC.doAttachVolume(options[:vmid], options[:zone], data)
+      str = "#{options[:zone]}|#{vmname}|#{options[:vmid]}|#{data}|#{jobid}"
       jobfile = "/tmp/jobstatus_#{cdate}"
-      CM.writeInfotoFile(jobfile,str)
+      CC.writeInfotoFile(jobfile,str)
     end
 
-    obj1 = CM.getVMStatus(options[:vmid], options[:zone])
+    obj1 = CC.getVMStatus(options[:vmid], options[:zone])
     vmname = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['displayname']
     curxen = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['hostname']
 

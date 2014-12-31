@@ -54,6 +54,10 @@ class CloudstackInfoClass
             obj1 = JSON.parse(str1)
         end
 
+	if obj1['listhostsresponse'].length < 1
+	   puts "#{xenname} host is not found in #{zone}, please check and pass correct hostname"
+	   exit
+	end
         hostid=obj1['listhostsresponse']['host'][0]['id']
         allvminfo= Array.new
         cc = 0
@@ -305,7 +309,7 @@ class CloudstackInfoClass
 
     def writeInfotoFile(filename,info)
         file1 = File.open(filename,'a+')
-        if not File.world_writable?(jobfile)
+        if not File.world_writable?(filename)
             file1.chmod(0777)
         end
         file1.write "#{info}\n"
