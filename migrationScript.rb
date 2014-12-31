@@ -110,12 +110,14 @@ exit
     vmname = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['displayname']
     curxen = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['hostname']
     status = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['state']
+
     if status == "Running"
       puts "Stopping #{vmname} now .."
       cmd="cloudstack -p #{options[:zone]} stopVirtualMachine id=#{options[:vmid]} forced=true"
-
       obj,stat = CM.getCommandStatus(cmd)
+
       status = "Running"
+      
       if stat == 0
         while status != "Stopped" do
           print "."
@@ -125,7 +127,8 @@ exit
         end
         print "\n\n"
       else
-        puts "Failed to stop the vm #{vmname}, please vm on cloudstack once"  
+        puts "Failed to stop the vm #{vmname}, please check vm on cloudstack once"
+        exit  
       end  
     elsif status == "Stopped"
       puts "Already vm is stopped .. and continuing with migration work ..."
@@ -164,7 +167,7 @@ exit
     print "\n\n"
     puts "Migration of #{vmname} is completed and now its running on #{curxen} "
   else  
-    puts "Need to pass vm and storage id for migration"
+    puts "Need to pass vmid and storage id for migration"
     puts "migrationScript.rb -p general -t migrate -m vmid -s storageid [For migration vm to different cluster]" 
   end 
 

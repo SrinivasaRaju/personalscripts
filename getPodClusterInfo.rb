@@ -55,7 +55,7 @@ class GetPodClusterInfo
             cc=obj['listclustersresponse']['count']
 
             for i in 0...cc
-                cmem=0,ccpu=0,cshd=0,cloc=0 
+                cmem,ccpu,cshd,cloc=0,0,0,0 
                 cname=obj['listclustersresponse']['cluster'][i]['name']
                 array = obj['listclustersresponse']['cluster'][i]['capacity']
                 array.each {|hash|
@@ -147,7 +147,7 @@ class GetPodClusterInfo
         
         data = obj1['liststoragepoolsresponse']['storagepool']
         data.each {|hash|
-	    totDisk,useDisk,perUsed=0,0,0
+	        totDisk,useDisk,perUsed=0,0,0
             if hash['scope'] == "CLUSTER"
                 totDisk = hash['disksizetotal']
                 useDisk = hash['disksizeused']

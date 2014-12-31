@@ -310,5 +310,38 @@ class CloudstackInfoClass
         end
         file1.write "#{info}\n"
         file1.close
-    end    
+    end   
+
+    def checkVMisShared(zone, vmid, stid)
+        obj2 = getVMStatus(vmid, zone)
+        vmstatus = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['state']
+        vmseroff = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['serviceofferingname']
+        
+        cmd = "cloudstack -p #{zone} listStoragePools id=#{stid}"
+        obj1,status=getCommandStatus(cmd)
+        stname = obj1['liststoragepoolsresponse']['storagepool']['name']    
+
+        if vmseroff =~ /local/ and stname !~ /Local/
+            puts "VM is local and passed shared storage"
+        else
+            cmd = "cloudstack -p #{zone} listVolumes virtualmachineid=#{vmid} listall=true"
+            obj,status=getCommandStatus(cmd)
+
+            if obj['listvolumesresponse'].length == 0
+                puts "this vm is not getting disk details"
+            else
+                cc = obj['listvolumesresponse']['count']
+                if cc == 1
+                    disktype = obj['listvolumesresponse'][0]['type']
+                    storageloc = obj['listvolumesresponse'][0]['storage']
+                else        
+                    array = obj['listvolumesresponse']['volume']
+                    array.each {|hash|
+                    diskid = hash['id']
+                    disktype = hash['type']
+                    diskname = hash['name']
+                end
+            end
+        end    
+    end 
 end
