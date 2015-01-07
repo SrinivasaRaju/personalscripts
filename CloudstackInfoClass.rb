@@ -329,14 +329,14 @@ class CloudstackInfoClass
         
         cmd = "cloudstack -p #{zone} listStoragePools id=#{stid}"
         obj1,status=getCommandStatus(cmd)
-        stname = obj1['liststoragepoolsresponse']['storagepool']['name']    
+        stname = obj1['liststoragepoolsresponse']['storagepool'][0]['name']    
 
         if vmseroff =~ /local/ and stname !~ /Local/
             puts "VM is local and passed shared storage"
+	    return 1
         else
-            cmd = "cloudstack -p #{zone} listVolumes virtualmachineid=#{vmid} listall=true"
-            obj,status=getCommandStatus(cmd)
-
+            cmd1 = "cloudstack -p #{zone} listVolumes virtualmachineid=#{vmid} listall=true"
+            obj,status=getCommandStatus(cmd1)
             if obj['listvolumesresponse'].length == 0
                 puts "this vm is not getting disk details"
                 return 1
