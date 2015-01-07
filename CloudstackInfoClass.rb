@@ -293,7 +293,7 @@ class CloudstackInfoClass
 
 #  This function will check whether target storage is free or not and it need Zone(general/compliant) and New Cluster Storage ID
 #  getStorageStatus(zone, stid)
-#  It returns Total Percentage is current used.
+#  It return Total Percentage is current used.
     def getStorageStatus(zone, stid)
         cmd = "cloudstack -p #{zone} listStoragePools id=#{stid}"
         stdin1, stdout1, stderr1, wait_thr1 = Open3.popen3("#{cmd}")
@@ -318,6 +318,10 @@ class CloudstackInfoClass
         file1.close
     end   
 
+# This function is for checking whether vm is local and storage, need to pass zone, vmid and storage id
+# checkVMisShared(zone, vmid, stid)
+# It return 1 or 0 (success = 0 and failed = 1)
+
     def checkVMisShared(zone, vmid, stid)
         obj2 = getVMStatus(vmid, zone)
         vmstatus = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['state']
@@ -335,18 +339,44 @@ class CloudstackInfoClass
 
             if obj['listvolumesresponse'].length == 0
                 puts "this vm is not getting disk details"
+                return 1
             else
                 cc = obj['listvolumesresponse']['count']
                 if cc == 1
                     disktype = obj['listvolumesresponse'][0]['type']
                     storageloc = obj['listvolumesresponse'][0]['storage']
-                else        
+                    stype = obj['listvolumesresponse'][0]['storagetype']
+
+                    if disktype == 'ROOT' and stype == 'local' and stname !~ /Local/
+                        puts "VM is local and passed shared storage"
+                        return 1
+                    else
+                        return 0
+                    end 
+                else
+                    rootstype=""
+                    datastype=""        
                     array = obj['listvolumesresponse']['volume']
                     array.each {|hash|
-                    diskid = hash['id']
-                    disktype = hash['type']
-                    diskname = hash['name']
-		}
+                        diskid = hash['id']
+                        disktype = hash['type']
+                        diskname = hash['name']
+                    
+                        if disktype == 'ROOT'
+                            rootstype = hash['storagetype']
+                        elsif disktype == 'DATADISK'
+                            datastype = hash['storagetype']
+                        end 
+                    }
+
+                    if datastype == 'shared' and rootstype == 'local'
+                        return 1
+                    elsif datastype == 'shared' and rootstype == 'local' and stname !~ /Local/
+                        return 1
+                    else
+                        return 0
+                    end
+
                 end
             end
         end    
