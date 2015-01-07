@@ -325,6 +325,7 @@ class CloudstackInfoClass
     def checkVMisShared(zone, vmid, stid)
         obj2 = getVMStatus(vmid, zone)
         vmstatus = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['state']
+        vmname = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['displayname']
         vmseroff = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['serviceofferingname']
         
         cmd = "cloudstack -p #{zone} listStoragePools id=#{stid}"
@@ -370,8 +371,10 @@ class CloudstackInfoClass
                     }
 
                     if datastype == 'shared' and rootstype == 'local'
+                        puts "VM is #{vmname} and root disk is #{rootstype}"
                         return 1
                     elsif datastype == 'shared' and rootstype == 'local' and stname !~ /Local/
+                        puts "VM is #{datastype} and #{rootstype} and #{stname}"
                         return 1
                     else
                         return 0
