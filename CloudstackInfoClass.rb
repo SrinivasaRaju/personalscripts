@@ -82,9 +82,10 @@ class CloudstackInfoClass
                 vmname = vminf['displayname']
                 curxen = vminf['hostname']
                 seroff = vminf['serviceofferingname']
+                tempname = vminf['templatename']
                 vgroup = vminf['group']
                 instname = vminf['instancename']
-                tstr = "#{curxen},#{vmid},#{vmname},#{instname},#{seroff},#{vgroup}"
+                tstr = "#{curxen},#{vmid},#{vmname},#{seroff},#{tempname},#{vgroup}"
                 allvminfo[cc]=tstr
                 cc += 1 
             }
@@ -107,9 +108,10 @@ class CloudstackInfoClass
             	vmname = vminf['displayname']
             	curxen = vminf['hostname']
             	seroff = vminf['serviceofferingname']
+                tempname = vminf['templatename']
             	vgroup = vminf['group']
             	instname = vminf['instancename']
-            	tstr = "#{curxen},#{vmid},#{vmname},#{instname},#{seroff},#{vgroup}"
+                tstr = "#{curxen},#{vmid},#{vmname},#{seroff},#{tempname},#{vgroup}"
             	allvminfo[cc]=tstr
             	cc += 1 
        	    }
