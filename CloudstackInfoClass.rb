@@ -333,8 +333,11 @@ class CloudstackInfoClass
         stname = obj1['liststoragepoolsresponse']['storagepool'][0]['name']    
 
         if vmseroff =~ /local/ and stname !~ /Local/
-            puts "VM is local and passed shared storage"
-	    return 1
+            puts "VM is local and passed shared Storage ID"
+	        return 1
+        elsif vmseroff =~ /shared/ and stname =~ /Local/
+            puts "VM is shared and Storage ID is local"
+            return 1
         else
             cmd1 = "cloudstack -p #{zone} listVolumes virtualmachineid=#{vmid} listall=true"
             obj,status=getCommandStatus(cmd1)
