@@ -107,7 +107,7 @@ elsif options[:task] == 'migrate'
       exit
     end
 
-    vstatus = CC.checkVMisShared(zone, vmid, stid)
+    vstatus = CC.checkVMisShared(options[:zone], options[:vmid], options[:storageid] )
     if vstatus == 1
       puts "Please check vm and storage and pass information"
       exit
