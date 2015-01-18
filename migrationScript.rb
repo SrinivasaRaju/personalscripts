@@ -107,6 +107,12 @@ elsif options[:task] == 'migrate'
       exit
     end
 
+    vstatus = CC.checkVMisShared(zone, vmid, stid)
+    if vstatus == 1
+      puts "Please check vm and storage and pass information"
+      exit
+    end
+    
     obj1 = CC.getVMStatus(options[:vmid], options[:zone])
     vmname = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['displayname']
     curxen = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['hostname']
@@ -198,4 +204,7 @@ elsif options[:task] == 'clusterinfo'
     puts "Please cluster name for displaying usage of it"
     puts "example : migrationScript.rb -p general -t clusterinfo -c N7_Dev1_HPDL380G8_P1_C4 [-o [shared/local/hosts]]"
   end
+else
+  puts "Please check and pass correct agruments"
+  puts "For help use ./migrationScript.rb -h"
 end
