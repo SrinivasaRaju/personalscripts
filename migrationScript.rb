@@ -25,7 +25,7 @@ PP = GetPodClusterInfo.new
 OptionParser.new do |opts|
   	opts.banner = "Usage: migrationScript.rb -p zone -p task [options] "
 
-  	opts.on('-v', "Migration Script Help Page") do |v|
+  	opts.on('-v', "Migration Script Version 1.0 ") do |v|
   		options[:verbose] = v
   	end
 
@@ -45,7 +45,7 @@ OptionParser.new do |opts|
   		options[:storageid] = s
   	end
 
-    	opts.on('-z', '--poddet', "Pod Name [prod/dev]") do |z|
+    	opts.on('-z', '--zonedet', "Zone Name [prod/dev]") do |z|
       		options[:zonedet] = z
     	end
 
@@ -53,7 +53,7 @@ OptionParser.new do |opts|
       		options[:clustname] = c
     	end
 
-      opts.on('-o', '--optinfo', "Options for display") do |o|
+      opts.on('-o', '--optinfo', "Options for showing cluster storage and hosts details") do |o|
           options[:optinfo] = o
       end
 
@@ -69,7 +69,7 @@ Examples:
   migrationScript.rb -p general -t migrate -m vmid -s storageid [For migration vm to different cluster]
   migrationScript.rb -p general -t statusjob
   migrationScript.rb -p general -t podinfo -z [prod/dev]
-  migrationScript.rb -p general -t clusterinfo -c clustername
+  migrationScript.rb -p general -t clusterinfo -c clustername [-o shared/local/hosts]
 __USAGE__
     puts opts
     exit
