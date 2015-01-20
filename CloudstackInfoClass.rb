@@ -382,7 +382,6 @@ class CloudstackInfoClass
                     else
                         return 0
                     end
-
                 end
             end
         end    

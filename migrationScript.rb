@@ -107,11 +107,11 @@ elsif options[:task] == 'migrate'
       exit
     end
 
-#    vstatus = CC.checkVMisShared(options[:zone], options[:vmid], options[:storageid] )
-#    if vstatus == 1
-#      puts "Please check vm and storage and pass information"
-#      exit
-#    end
+    vstatus = CC.checkVMisShared(options[:zone], options[:vmid], options[:storageid] )
+    if vstatus == 1
+      puts "Please check vm and storage and pass information"
+      exit
+    end
     
     obj1 = CC.getVMStatus(options[:vmid], options[:zone])
     vmname = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['displayname']
@@ -138,6 +138,9 @@ elsif options[:task] == 'migrate'
       end  
     elsif status == "Stopped"
       puts "Already vm #{vmname} is stopped .. and continuing with migration work ..."
+    elsif status == "Stopping" or status == "Migrating"
+      puts "#{vmname} is currently #{status}, please check mannually."
+      exit
     end
 
     #Below steps will get the additional disk information for this vm
