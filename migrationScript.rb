@@ -107,11 +107,11 @@ elsif options[:task] == 'migrate'
       exit
     end
 
-    vstatus = CC.checkVMisShared(options[:zone], options[:vmid], options[:storageid] )
-    if vstatus == 1
-      puts "Please check vm and storage and pass information"
-      exit
-    end
+    #vstatus = CC.checkVMisShared(options[:zone], options[:vmid], options[:storageid] )
+    #if vstatus == 1
+    #  puts "Please check vm and storage and pass information"
+    #  exit
+    #end
     
     obj1 = CC.getVMStatus(options[:vmid], options[:zone])
     vmname = obj1['listvirtualmachinesresponse']['virtualmachine'][0]['displayname']
