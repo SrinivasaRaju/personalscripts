@@ -33,7 +33,7 @@ OptionParser.new do |opts|
   		options[:zone] = p
   	end
 
-  	opts.on('-t', '--task=MANDATORY', "Pass Tasks [migration/listvm/storageinfo/statusjob]") do |p|
+  	opts.on('-t', '--task=MANDATORY', "Pass Tasks [migrate/listvm/storageinfo/statusjob]") do |p|
   		options[:task] = p
   	end
 
@@ -137,7 +137,7 @@ elsif options[:task] == 'migrate'
         exit  
       end  
     elsif status == "Stopped"
-      puts "Already vm is stopped .. and continuing with migration work ..."
+      puts "Already vm #{vmname} is stopped .. and continuing with migration work ..."
     end
 
     #Below steps will get the additional disk information for this vm
@@ -146,6 +146,7 @@ elsif options[:task] == 'migrate'
 
     #Now Detaching additional disk from this vm and storaging information in file
     if data.length > 0
+      puts "Disk Details \n #{data} \n"
       CC.doDetachVolume(options[:vmid], options[:zone], data)
     end
 
