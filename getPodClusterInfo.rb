@@ -148,13 +148,14 @@ class GetPodClusterInfo
         data = obj1['liststoragepoolsresponse']['storagepool']
         data.each {|hash|
 	        totDisk,useDisk,perUsed=0,0,0
-            if hash['scope'] == "CLUSTER"
+            hstatus = hash['state']
+            if hash['scope'] == "CLUSTER" and hstatus =='UP'
                 totDisk = hash['disksizetotal']
                 useDisk = hash['disksizeused']
                 perUsed = ((useDisk * 100)/totDisk)
                 shardStorage[s1]="#{hash['id']} \t #{perUsed}"
                 s1 +=1
-            elsif hash['scope'] == "HOST"
+            elsif hash['scope'] == "HOST" and hstatus =='UP'
                 totDisk = hash['disksizetotal']
                 useDisk = hash['disksizeused']
                 perUsed = ((useDisk * 100)/totDisk)
