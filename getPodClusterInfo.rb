@@ -147,19 +147,28 @@ class GetPodClusterInfo
         
         data = obj1['liststoragepoolsresponse']['storagepool']
         data.each {|hash|
-	        totDisk,useDisk,perUsed=0,0,0
+	    totDisk,useDisk,perUsed=0,0,0
             hstatus = hash['state']
-            if hash['scope'] == "CLUSTER" and hstatus =='UP'
+            if hash['scope'] == "CLUSTER"
                 totDisk = hash['disksizetotal']
                 useDisk = hash['disksizeused']
-                perUsed = ((useDisk * 100)/totDisk)
-                shardStorage[s1]="#{hash['id']} \t #{perUsed}"
-                s1 +=1
-            elsif hash['scope'] == "HOST" and hstatus =='UP'
+		if hstatus == 'Up'
+                	perUsed = ((useDisk * 100)/totDisk)
+                	shardStorage[s1]="#{hash['id']} \t #{perUsed}"
+		else
+			shardStorage[s1]="#{hash['id']} \t #{hash['state']}"	
+                end
+		s1 +=1
+            elsif hash['scope'] == "HOST" 
+		hname = hash['name'].split(' ')
                 totDisk = hash['disksizetotal']
                 useDisk = hash['disksizeused']
-                perUsed = ((useDisk * 100)/totDisk)
-                localStorage[l1] = "#{hash['id']} \t #{perUsed}" 
+		if hstatus == 'Up' and useDisk != nil
+                	perUsed = ((useDisk * 100)/totDisk)
+                	localStorage[l1] = "#{hname[0]} \t #{hash['id']} \t #{perUsed}"
+		else
+                	localStorage[l1] = "#{hname[0]} \t #{hash['id']} \t is Down currently "
+		end
                 l1  += 1   
             end 
         }

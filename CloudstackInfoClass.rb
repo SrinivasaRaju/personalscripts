@@ -327,6 +327,7 @@ class CloudstackInfoClass
         vmstatus = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['state']
         vmname = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['displayname']
         vmseroff = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['serviceofferingname']
+        projid = obj2['listvirtualmachinesresponse']['virtualmachine'][0]['projectid']
         
         cmd = "cloudstack -p #{zone} listStoragePools id=#{stid}"
         obj1,status=getCommandStatus(cmd)
@@ -339,7 +340,11 @@ class CloudstackInfoClass
             puts "VM is shared and Storage ID is local"
             return 1
         else
-            cmd1 = "cloudstack -p #{zone} listVolumes virtualmachineid=#{vmid} listall=true"
+	    if projid == nil
+            	cmd1 = "cloudstack -p #{zone} listVolumes virtualmachineid=#{vmid} listall=true"
+	    else
+            	cmd1 = "cloudstack -p #{zone} listVolumes virtualmachineid=#{vmid} projectid=#{projid} listall=true"
+	    end
             obj,status=getCommandStatus(cmd1)
             if obj['listvolumesresponse'].length == 0
                 puts "this vm is not getting disk details"
@@ -347,9 +352,9 @@ class CloudstackInfoClass
             else
                 cc = obj['listvolumesresponse']['count']
                 if cc == 1
-                    disktype = obj['listvolumesresponse'][0]['type']
-                    storageloc = obj['listvolumesresponse'][0]['storage']
-                    stype = obj['listvolumesresponse'][0]['storagetype']
+                    disktype = obj['listvolumesresponse']['volume'][0]['type']
+                    storageloc = obj['listvolumesresponse']['volume'][0]['storage']
+                    stype = obj['listvolumesresponse']['volume'][0]['storagetype']
 
                     if disktype == 'ROOT' and stype == 'local' and stname !~ /Local/
                         puts "VM is local and passed shared storage"
